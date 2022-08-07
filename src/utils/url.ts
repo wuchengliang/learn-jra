@@ -26,4 +26,5 @@ export const useUrlQueryParam = <K extends string>(keys: K[]) => {
       return setSearchParam(o);
     },
   ] as const;
+  //as const被称为 const 类型断言，const 类型断言告诉编译器，要将这个表达式推断为最具体的类型
 };
