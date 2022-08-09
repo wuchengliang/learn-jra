@@ -25,9 +25,10 @@ interface ListProps extends TableProps<Project> {
 
 export const List = ({ users, ...props }: ListProps) => {
   const { mutate } = useEditProject();
-
+  console.log(props.refresh,'retry')
   const pinProject = (id: number) => (pin: boolean) =>
-    mutate({ id, pin }).then(props.refresh);
+    mutate({ id, pin }).then(props.refresh); 
+    //相当于.then(()=>props.refresh()),因为props.refresh 是()=>{}的结构
   return (
     <Table
       rowKey={"id"}
