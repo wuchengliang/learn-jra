@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useMountRef } from "utils";
 
 interface State<D> {
   error: Error | null;
@@ -25,8 +26,8 @@ export const useAsync = <D>(
     ...defaultInitialState,
     ...initialState,
   });
-  const [retry,setRetry] =useState(()=>()=>{})
-
+  const [retry, setRetry] = useState(() => () => {});
+  const mountedRef = useMountRef();
   const setData = (data: D) =>
     setState({
       data,
@@ -42,21 +43,24 @@ export const useAsync = <D>(
     });
 
   // run 用来触发异步请求
-  const run = (promise: Promise<D>,runConfig?:{retry:()=>Promise<D>}) => {
+  const run = (
+    promise: Promise<D>,
+    runConfig?: { retry: () => Promise<D> }
+  ) => {
     if (!promise || !promise.then) {
       throw new Error("请传入 Promise 类型数据");
     }
     setState({ ...state, stat: "loading" });
-    setRetry(()=>()=>
-    { 
-      if(runConfig?.retry){
-        run(runConfig?.retry(),runConfig)
-      }    
-    } 
-    );
+    setRetry(() => () => {
+      if (runConfig?.retry) {
+        run(runConfig?.retry(), runConfig);
+      }
+    });
     return promise
       .then((data) => {
-        setData(data);
+        if (mountedRef.current) {
+          setData(data);
+        }
         return data;
       })
       .catch((error) => {
@@ -66,7 +70,6 @@ export const useAsync = <D>(
         return error;
       });
   };
-
 
   return {
     isIdle: state.stat === "idle",
