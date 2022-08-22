@@ -7,15 +7,14 @@ import { cleanObject, subset } from "utils/index";
  */
 export const useUrlQueryParam = <K extends string>(keys: K[]) => {
   const [searchParams, setSearchParam] = useSearchParams();
-  const [stateKeys] = useState(keys)
+  const [stateKeys] = useState(keys);
   return [
     useMemo(
       () =>
         subset(Object.fromEntries(searchParams), stateKeys) as {
           [key in K]: string;
         },
-      // eslint-disable-next-line react-hooks/exhaustive-deps
-      [searchParams,stateKeys]
+      [searchParams, stateKeys]
     ),
     (params: Partial<{ [key in K]: unknown }>) => {
       // iterator
@@ -27,5 +26,4 @@ export const useUrlQueryParam = <K extends string>(keys: K[]) => {
       return setSearchParam(o);
     },
   ] as const;
-  //as const被称为 const 类型断言，const 类型断言告诉编译器，要将这个表达式推断为最具体的类型
 };
